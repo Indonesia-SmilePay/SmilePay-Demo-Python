@@ -1,6 +1,6 @@
 import json
 
-from Constant import MERCHANT_ID, ACCESS_TOKEN_API, BASE_URL
+from Constant import MERCHANT_ID, ACCESS_TOKEN_API, BASE_SANDBOX_URL
 from Tool_PostJson import postJson
 from Tool_Sign import sign
 
@@ -20,7 +20,7 @@ def generate_access_token():
     signature = sign(privateKeyStr, stringToSign)
     print("signature=", signature)
     # url
-    url = BASE_URL + ACCESS_TOKEN_API
+    url = BASE_SANDBOX_URL + ACCESS_TOKEN_API
     # data
     data = {
         "grantType": "client_credentials"
@@ -30,5 +30,8 @@ def generate_access_token():
     postJson(url, timestamp, clientKey, signature, json_data)
 
 
-# run
+# run here
 generate_access_token()
+
+# if you see '2007300'. congregations! AccessToken is success
+# {'responseCode': '2007300', 'responseMessage': 'Successful', 'accessToken': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MDEwNjUzMTMsImV4cCI6MTcwMTA2NjIxMywiaWF0IjoxNzAxMDY1MzEzLCJNRVJDSEFOVF9JRCI6InNhbmRib3gtMTAwMDEifQ.EFRCYKIr6BOR6QodRBpEYkzEya3ZqMsbDg5yqF_K0gg', 'tokenType': 'Bearer', 'expiresIn': '900', 'additionalInfo': None}

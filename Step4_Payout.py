@@ -6,7 +6,7 @@ import time
 
 import requests
 
-from Constant import BASE_URL, MERCHANT_ID, MERCHANT_SECRET, PAY_OUT_API
+from Constant import BASE_SANDBOX_URL, MERCHANT_ID, MERCHANT_SECRET, PAY_OUT_API
 from req.AddressReq import AddressReq
 from req.ItemDetailReq import ItemDetailReq
 from req.MerchantReq import MerchantReq
@@ -16,7 +16,7 @@ from req.ReceiverReq import ReceiverReq
 from req.TradePayoutReq import TradePayoutReq
 
 # from step2
-access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MDA1NjQ4MjAsImV4cCI6MTcwMDU2NTcyMCwiaWF0IjoxNzAwNTY0ODIwLCJNRVJDSEFOVF9JRCI6InNhbmRib3gtMTAwMDQifQ.E-HZJ94eLmZYpykFGtLLBxlWJfSat9EAm4r36vZywxQ"
+access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MDEwNjUzMTMsImV4cCI6MTcwMTA2NjIxMywiaWF0IjoxNzAxMDY1MzEzLCJNRVJDSEFOVF9JRCI6InNhbmRib3gtMTAwMDEifQ.EFRCYKIr6BOR6QodRBpEYkzEya3ZqMsbDg5yqF_K0gg"
 
 
 def disbursement_pay_out():
@@ -24,7 +24,7 @@ def disbursement_pay_out():
 
     # url
     end_point_ulr = PAY_OUT_API
-    url = BASE_URL + end_point_ulr
+    url = BASE_SANDBOX_URL + end_point_ulr
 
     # transaction time
     timestamp = "2023-11-21T11:03:47+07:00"

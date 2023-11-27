@@ -2,13 +2,16 @@ CURRENCY = "IDR"
 F_0 = "yyyy-MM-dd'T'HH:mm:ssXXX"
 
 # from merchant platform: merchantId
-MERCHANT_ID = "sandbox-10004"
+MERCHANT_ID = "sandbox-10001"
 
 # from merchant platform: merchantId
-MERCHANT_SECRET = "4ee78294246e003ebc9c3fdab013b9003a9eed7aaff5b2c433dbf54e95e00550"
+MERCHANT_SECRET = "c14befbb5976d969a91db06439d7e0f964f1a92c0d5417f5cc0a64a9988bf479"
 
-# from docs API
-BASE_URL = "https://sandbox-gateway-test.smilepay.id"
+# SANDBOX URL. From docs API
+BASE_SANDBOX_URL = "https://sandbox-gateway.smilepay.id"
+
+# PRODUCTION URL. From docs API. If you pass the sandbox docking, you can switch the URL to production.
+BASE_URL = "https://sandbox-gateway.smilepay.id";
 
 # from docs API
 ACCESS_TOKEN_API = "/v1.0/access-token/b2b"
