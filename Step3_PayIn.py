@@ -8,7 +8,8 @@ import requests
 
 import Step2_AccessToken
 import Tool_Sign
-from Constant import PAY_IN_API, BASE_SANDBOX_URL, MERCHANT_ID, MERCHANT_SECRET, BASE_URL
+from Constant import PAY_IN_API, BASE_SANDBOX_URL, MERCHANT_ID, MERCHANT_SECRET, BASE_URL, MERCHANT_ID_TEST, \
+    MERCHANT_SECRET_TEST
 from req.AddressReq import AddressReq
 from req.ItemDetailReq import ItemDetailReq
 from req.MerchantReq import MerchantReq
@@ -30,7 +31,7 @@ def transaction_pay_in():
     timestamp = Tool_Sign.get_formatted_datetime('Asia/Bangkok')
     access_token = Step2_AccessToken.generate_access_token(timestamp)
     # partner_id
-    partner_id = MERCHANT_ID
+    partner_id = MERCHANT_ID_TEST
     merchant_order_no = "T_" + str(time.time())
     purpose = "Purpose For Transaction from python SDK"
     payment_method = "BCA"
@@ -38,7 +39,7 @@ def transaction_pay_in():
     additional_param = "other descriptions"
 
     # moneyReq
-    money_req = MoneyReq("IDR", 10000)
+    money_req = MoneyReq("IDR", 30000)
 
     # merchantReq
     merchant_req = MerchantReq(partner_id, None, None)
@@ -86,7 +87,7 @@ def transaction_pay_in():
     print("string_to_sign=", string_to_sign)
 
     # signature
-    signature = calculate_hmac_sha512_base64(MERCHANT_SECRET, string_to_sign)
+    signature = calculate_hmac_sha512_base64(MERCHANT_SECRET_TEST, string_to_sign)
     print("merchant_secret=", MERCHANT_SECRET)
     print("signature=", signature)
 

@@ -6,7 +6,10 @@ import time
 
 import requests
 
-from Constant import BASE_SANDBOX_URL, MERCHANT_ID, MERCHANT_SECRET, PAY_OUT_API
+import Step2_AccessToken
+import Tool_Sign
+from Constant import BASE_SANDBOX_URL, MERCHANT_ID, MERCHANT_SECRET, PAY_OUT_API, MERCHANT_ID_TEST, BASE_URL, \
+    MERCHANT_SECRET_TEST
 from req.AddressReq import AddressReq
 from req.ItemDetailReq import ItemDetailReq
 from req.MerchantReq import MerchantReq
@@ -21,15 +24,17 @@ access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MDEwNjUzMTMsImV
 
 def disbursement_pay_out():
     print("=====> step4 : Payout Disbursement")
-
+    # transaction time
+    timestamp = Tool_Sign.get_formatted_datetime('Asia/Bangkok')
+    access_token = Step2_AccessToken.generate_access_token(timestamp)
+    # partner_id
+    partner_id = MERCHANT_ID_TEST
     # url
     end_point_ulr = PAY_OUT_API
-    url = BASE_SANDBOX_URL + end_point_ulr
+    url = BASE_URL + end_point_ulr
 
     # transaction time
-    timestamp = "2023-11-21T11:03:47+07:00"
     # partner_id
-    partner_id = MERCHANT_ID
     merchant_order_no = "D_" + str(time.time())
     purpose = "Purpose For Disbursement from python SDK"
     payment_method = "BCA"
@@ -86,7 +91,7 @@ def disbursement_pay_out():
     print("string_to_sign=", string_to_sign)
 
     # signature
-    signature = calculate_hmac_sha512_base64(MERCHANT_SECRET, string_to_sign)
+    signature = calculate_hmac_sha512_base64(MERCHANT_SECRET_TEST, string_to_sign)
     print("merchant_secret=", MERCHANT_SECRET)
     print("signature=", signature)
 
