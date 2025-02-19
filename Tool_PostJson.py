@@ -2,7 +2,7 @@ import requests
 
 
 # Generating Signatures with Crypto
-def postJson(url, timestamp, clientKey, signature, json_data):
+def postJson(url: object, timestamp: object, clientKey: object, signature: object, json_data: object) -> object:
     # header
     headers = {
         'Content-Type': 'application/json',
@@ -11,7 +11,9 @@ def postJson(url, timestamp, clientKey, signature, json_data):
         'X-SIGNATURE': signature,
     }
     # POST request
+    print("==request url:" + url)
     response = requests.post(url, data=json_data, headers=headers)
     # Get response result
     result = response.json()
     print(result)
+    return result

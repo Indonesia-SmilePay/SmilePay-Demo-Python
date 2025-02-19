@@ -1,37 +1,40 @@
 import json
 
-from Constant import MERCHANT_ID, ACCESS_TOKEN_API, BASE_SANDBOX_URL
+import Tool_Sign
+from Constant import ACCESS_TOKEN_API, BASE_SANDBOX_URL, BASE_URL
 from Tool_PostJson import postJson
 from Tool_Sign import sign
 
 # from step1
-privateKeyStr = "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDGWPgn9MHGpINP55SCJnBIoti5GU4/50ijdvna6ErZLpwLb0CYIlUaXS6YYv2GMW8SXyT2CaVb53tlS7Y6tSzgVNvGB07wJJkkq66ZLlXEkpsXu4lXOgz1D+jxubrdofbVNj5RK3PC/JQjL4brueuBuXyGSWBfSviCy2DximOPh/yCwslK6Fa8JPwehoBFHzECSOmZkPxg1F7VMxKH6EF/qSt5/KAe9fFwe1Nu6ro5pciFK6gEBTuO+p6fnvUEDepW83Ca0hsTqil7Uy1Ule1soQuQH0RWab6MBRqcfeuk82qDnmCaEAZ+PMdX51vxKMvJgtk7un2vBA4yt7hfJ1PbAgMBAAECggEAEnjjt5joWQ8mOZFYN9zLlUAxTd/I9VOdZLfmYhhDLEHWf4wfaGu+IEPwXHnPoalF7mCVCSLx1wLSb6ci9Am+ga/1fdZdaCkIaC1jB9oUW8fJkObCzjBWV5ZhO+3vtMdqPQYdvKJ+1/h89V/uQVLh14WGTt1Tj9xkE45MW4JnbkzyS3CNrzSIlBl0w1PEyPHoqv4wOZjSinedMsKE0IAXhgOu4hClebkeX+0eBvkVNi17+KHK+Aizf2DwJ6+RUUCeGr7yKdOOBxZxkEEEKwHNRkjG0MH69s3Vs80w2NSM89xYqX8No5dwMC0Hhp/i87k2o/qM+J0BuLI9uee9KpXqUQKBgQDS6VbTXF4O2g88OKvH//4CSsG6N8ySAHmJJfNha4u7kmCQz9iLNblRI4Aoei4KIVdY/kHorSijMSa025ki8ebQLw7G5Me5nqBOiuRqlIbXfTaCxjWggzm434mPs/2998GGPEIm1g+qBML2gv42XqG391hrOFpx0EaozmR6JBT+8QKBgQDwwAlo+JOPLlCvfHiMEu+/bMU7F9HKJDOsgG5fFxScUfBBVhXslpV6h23iXp4v/VmF+5EeCIE4gInXEyj9Yn9gpaL72Gdf8PXyZel9WrRfL3CyH0vnR1DM60FHAFmEFUkFvCmzDyOqZmyt2DpYcd4y9Kfs/Ts/iRfvAFAtoO1XiwKBgE59IZ+0nxg91C+gE2VxgdDOizvGqi2nWZNNeT5G7JBYT/F0N+zOiHGGmZn2pg2FDOGEdXimgBoDH5lso5eamD/fU0t3NlCAlL3F+G0lauzknxWZt7lNPHztS18cJ5C7k9xlrmSPgvLNpNRiOUJ4gwxYUyJLrXTvgmwtqry9ksaxAoGAFkiQFmk7rzsIONX6imyOSFeXAds4jc9AAS16Cc8nFzj2VfXT3awqdcbnQtajKan3iVE5o2ACJeqv13pshteBFr7+EPV8zAKPoToRnIqyu0S216XR7rxJHE6CIkJEBte5hJBgA7TZBkKouIaVD+6qNGk0ydi+jSjxUCvlP/PvQ/UCgYBa/ANDflVEvas7txSmqJJ4mDyExs3lcQ2dEBVj6cbfEGDJH0QiOJwbnTAKnub7nNJEWIzIjmNBLoZBUQ1Ox8rRYqvLs0Edl99Y3CFx4boRuBB690kFABl3XzAwpWX266vZfRCg8BcGqpH/BTuAvSW4gHKCGhyqGlDes8w9OUq+4A=="
+privateKeyStr = "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCjVahxDlZ8ETxPlEoNNmgVCMbS4AAZzHfOxjiUA7sDU1S5Qpd67Wtz6+n3ycBthVynFvwWU7ICAn48OsRhNLRvLEfx3eRQwjfy1B1tUJhGwwTxzTNX3f0+uif+8GwLbf4ApscWUpDJr3B+MJj8F6PtPAaPqa3ohnmOvcBXalCMeCb6C198JdRvYzW2wtfM719Xvp3VTwEqAzcTsVynauZxBP5fAsJGNn0foOnrSQY791UB6t2CqKv4qo0J4GKVyR8Ojphi/rY5sJ8bCmL7duSoYKlnEKTX2OZC1n2MO4Kjzs9PbC5yX8qCDFXxC8vbCcrQNYfStBUNZFV8/34Fhe19AgMBAAECggEACPZ3GQcYo1O9y78fJiT1ZqwV3vX4Q3InI+NYMPUYcskElerrzYzQL+sC6nw5cTkXebrG6AG9O6N/4lW2N4BRI2WaaBENSYoy0EIoADrjNETY1Vz1g42UqzfDYJe4UhM91DLSq2yp8ctNALuxdWnlrquzz3fX6XHRo03Ry2oz09VgfowxrjapTJz4IcWM/IMSOIxO298r8Z5/Pl/KKTTEBh4MLAbht8IevG/VhNq6Fr2Sw1uUgaottiS2ChtubeyPVujGtKVJ8935pUEErrTjB41hVChyVI9ExwiMCjVZ8nahMfq4U/yCRG3YpPboy5n0CVQNDU5cIgzkFWKP1RqbwQKBgQC5GzOVSALv3PVZfTdFY+WoJAyNeqo/urpOOoUgK+9QmV+iZsH9dx7+WRgB4O3nVSwcskvqGCrZoIbJ/iEsppQ7/9KNP2wH5WxrfCQr4FltqW8UmllgikcZgtBrbcMCu1ncOLlT8qqQ7rxSk2uTy6mZeHnblQnTplPYZaUO0uC8QQKBgQDh49kbvDNM1r906vYiu+S8cYAG+vx4Dr52yHo8KY3BvITue0QCElsIWtOVOIUWpXhFZW67hKOPBAWjNBNQP2XFv8y14eMdAtp5C60uvlH3BuMjnMVTpJqxF0YUM2grWmazgzDmle3n6Z3ZWCQJHNRyPl371g+pyMzRSKOCI5ySPQKBgCfChQDyt9bH0leHguC/xWupWpzlFT6dIDl/bmrrpPreBuG+Srrj5F9jyblVlCRVciUz0wSUblfSmEE4+e06VqrQl2xJjC3iBLjNsINQLEVW2IpHYR1Qdlcvdw8sQ3AJyBJ6iKxUenipHwBps/jKDULu0tXsnHC+0FGx+5NEjotBAoGAbLQrHI+62DVXuToA7MIi1xR/mdxadqQRwDPFrwIIN70y81jaZ2zR5flfbKXgVf+XGz4uxYqU8xPqapl62dlIbptYNgbYNnPTEwEtfBsWcpwb3l1pEFFcJ/CdRsdeT86XMbfmZnCsJjhkP92Mqd331mpw6+oda4U4G1araMseY7kCgYBgSaKMTZoHcJbRZZK+SBPuslpXt9CZ9EtIFnRqrnOtY6CkAehzxDSGfIIuo/0KtGa2l5uucdPyNr0ThcGw16Bt50QqgUi4/JhUjjPHwWukTf5ne59fJ9H6+8UbaRrOc0DNmmVpVdmYzyHPbW4GpHtCpy49h0rYHcKUvJ4lZAzOXQ=="
 
 
-def generate_access_token():
+def generate_access_token(timestamp:object):
     print("=====> step2 : Create Access Token")
     # transaction time
-    timestamp = "2023-11-21T11:03:47+07:00"
     # client key
-    clientKey = MERCHANT_ID
+    clientKey = "10006"
     # string to sign
     stringToSign = clientKey + "|" + timestamp
     # signature
     signature = sign(privateKeyStr, stringToSign)
     print("signature=", signature)
     # url
-    url = BASE_SANDBOX_URL + ACCESS_TOKEN_API
+    url = BASE_URL + ACCESS_TOKEN_API
     # data
     data = {
         "grantType": "client_credentials"
     }
     json_data = json.dumps(data)
     print(json_data)
-    postJson(url, timestamp, clientKey, signature, json_data)
+    response = postJson(url, timestamp, clientKey, signature, json_data)
+    data = json.loads(response)
+    return data['access_token']
 
 
 # run here
-generate_access_token()
 
+timestamp = Tool_Sign.get_formatted_datetime('Asia/Bangkok')
+generate_access_token(timestamp)
 # if you see '2007300'. congregations! AccessToken is success
 # {'responseCode': '2007300', 'responseMessage': 'Successful', 'accessToken': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MDEwNjUzMTMsImV4cCI6MTcwMTA2NjIxMywiaWF0IjoxNzAxMDY1MzEzLCJNRVJDSEFOVF9JRCI6InNhbmRib3gtMTAwMDEifQ.EFRCYKIr6BOR6QodRBpEYkzEya3ZqMsbDg5yqF_K0gg', 'tokenType': 'Bearer', 'expiresIn': '900', 'additionalInfo': None}

@@ -6,7 +6,9 @@ import time
 
 import requests
 
-from Constant import PAY_IN_API, BASE_SANDBOX_URL, MERCHANT_ID, MERCHANT_SECRET
+import Step2_AccessToken
+import Tool_Sign
+from Constant import PAY_IN_API, BASE_SANDBOX_URL, MERCHANT_ID, MERCHANT_SECRET, BASE_URL
 from req.AddressReq import AddressReq
 from req.ItemDetailReq import ItemDetailReq
 from req.MerchantReq import MerchantReq
@@ -16,18 +18,17 @@ from req.ReceiverReq import ReceiverReq
 from req.TradePayInReq import TradePayInReq
 
 # from step2
-access_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE3MDEwNjUzMTMsImV4cCI6MTcwMTA2NjIxMywiaWF0IjoxNzAxMDY1MzEzLCJNRVJDSEFOVF9JRCI6InNhbmRib3gtMTAwMDEifQ.EFRCYKIr6BOR6QodRBpEYkzEya3ZqMsbDg5yqF_K0gg"
-
 
 def transaction_pay_in():
     print("=====> step3 : PayIn transaction")
 
     # url
     end_point_ulr = PAY_IN_API
-    url = BASE_SANDBOX_URL + end_point_ulr
+    url = BASE_URL + end_point_ulr
 
     # transaction time
-    timestamp = "2023-11-21T11:03:47+07:00"
+    timestamp = Tool_Sign.get_formatted_datetime('Asia/Bangkok')
+    access_token = Step2_AccessToken.generate_access_token(timestamp)
     # partner_id
     partner_id = MERCHANT_ID
     merchant_order_no = "T_" + str(time.time())
