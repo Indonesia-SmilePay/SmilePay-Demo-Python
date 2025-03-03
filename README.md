@@ -1,2 +1,3 @@
-# SmilePay-SDK-Python
-SmilePay-SDK-Python
+# Smilepay-Demo-Python
+
+Smilepay-Demo-Python

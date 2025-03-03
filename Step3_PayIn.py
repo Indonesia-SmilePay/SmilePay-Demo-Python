@@ -1,15 +1,11 @@
-import base64
-import hashlib
-import hmac
 import json
 import time
 
 import requests
 
-import Step2_AccessToken
-import Tool_Sign
-from Constant import PAY_IN_API, BASE_SANDBOX_URL, MERCHANT_ID, MERCHANT_SECRET, BASE_URL, MERCHANT_ID_TEST, \
-    MERCHANT_SECRET_TEST
+from Constant import PAY_IN_API, BASE_URL, MERCHANT_ID, ACCESS_TOKEN
+from Tool import getTimestamp
+from Tool_Sign import hmacSHA512
 from req.AddressReq import AddressReq
 from req.ItemDetailReq import ItemDetailReq
 from req.MerchantReq import MerchantReq
@@ -17,6 +13,7 @@ from req.MoneyReq import MoneyReq
 from req.PayerReq import PayerReq
 from req.ReceiverReq import ReceiverReq
 from req.TradePayInReq import TradePayInReq
+
 
 # from step2
 
@@ -27,14 +24,17 @@ def transaction_pay_in():
     end_point_ulr = PAY_IN_API
     url = BASE_URL + end_point_ulr
 
+    # access_token
+    access_token = ACCESS_TOKEN
+
     # transaction time
-    timestamp = Tool_Sign.get_formatted_datetime('Asia/Bangkok')
-    access_token = Step2_AccessToken.generate_access_token(timestamp)
+    timestamp = getTimestamp()
+
     # partner_id
-    partner_id = MERCHANT_ID_TEST
+    partner_id = MERCHANT_ID
     merchant_order_no = "T_" + str(time.time())
-    purpose = "Purpose For Transaction from python SDK"
-    payment_method = "BCA"
+    purpose = "Purpose For Transaction from python Demo"
+    payment_method = "BRI"
     product_detail = "Product details"
     additional_param = "other descriptions"
 
@@ -45,11 +45,11 @@ def transaction_pay_in():
     merchant_req = MerchantReq(partner_id, None, None)
 
     # payerReq
-    payer_req = PayerReq("Jef-fer", "jef.gt@gmail.com", "82-3473829260",
+    payer_req = PayerReq("paulo", "paulo@gmail.com", "82-018922990",
                          "Jalan Pantai Mutiara TG6, Pluit, Jakarta", None)
 
     # receiverReq
-    receiver_req = ReceiverReq("Viva in", "Viva@mir.com", "82-3473233732",
+    receiver_req = ReceiverReq("smilepay", "smilepay@gmail.com", "82-018922990",
                                "Jl. Pluit Karang Ayu 1 No.B1 Pluit", None)
 
     # itemDetailReq
@@ -58,10 +58,10 @@ def transaction_pay_in():
 
     # billingAddress
     billing_address = AddressReq("Jl. Pluit Karang Ayu 1 No.B1 Pluit", "jakarta",
-                                 "14450", "82-3473233732", "Indonesia")
+                                 "14450", "82-018922990", "Indonesia")
     # shippingAddress
     shipping_address = AddressReq("Jl. Pluit Karang Ayu 1 No.B1 Pluit", "jakarta",
-                                  "14450", "82-3473233732", "Indonesia")
+                                  "14450", "82-018922990", "Indonesia")
 
     # payInReq
     pay_in_req = TradePayInReq(payment_method, payer_req, receiver_req, None, merchant_order_no, purpose,
@@ -70,26 +70,8 @@ def transaction_pay_in():
                                item_detail_req_list, billing_address, shipping_address, money_req, merchant_req, None,
                                None)
 
-    # jsonStr by json then minify
     json_data_minify = json.dumps(pay_in_req, default=lambda o: o.__dict__, separators=(',', ':'))
-    print("json_data_minify=", json_data_minify)
-
-    # calculate_sha256
-    byte2Hex = calculate_sha256(json_data_minify)
-    print("sha256 then byte2Hex=", byte2Hex)
-
-    # lowercase_string
-    lower_case = byte2Hex.lower()
-    print("lower_case=", lower_case)
-
-    # build
-    string_to_sign = "POST" + ":" + end_point_ulr + ":" + access_token + ":" + lower_case + ":" + timestamp
-    print("string_to_sign=", string_to_sign)
-
-    # signature
-    signature = calculate_hmac_sha512_base64(MERCHANT_SECRET_TEST, string_to_sign)
-    print("merchant_secret=", MERCHANT_SECRET)
-    print("signature=", signature)
+    signature = hmacSHA512("POST", end_point_ulr, access_token, json_data_minify, timestamp)
 
     # post
     # header
@@ -110,33 +92,3 @@ def transaction_pay_in():
     result = response.json()
     print(result)
 
-
-def remove_nulls(d):
-    if isinstance(d, dict):
-        for k, v in list(d.items()):
-            if v is None:
-                del d[k]
-            else:
-                remove_nulls(v)
-    if isinstance(d, list):
-        for v in d:
-            remove_nulls(v)
-    return d
-
-
-def calculate_sha256(text):
-    sha256_hash = hashlib.sha256()
-    sha256_hash.update(text.encode('utf-8'))
-    hash_value = sha256_hash.hexdigest()
-    return hash_value
-
-
-def calculate_hmac_sha512_base64(key, message):
-    hmac_sha512 = hmac.new(key.encode('utf-8'), message.encode('utf-8'), hashlib.sha512)
-    hash_value = hmac_sha512.digest()
-    base64_value = base64.b64encode(hash_value).decode('utf-8')
-    return base64_value
-
-
-# run
-transaction_pay_in()

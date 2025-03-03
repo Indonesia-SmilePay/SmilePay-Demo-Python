@@ -1,15 +1,14 @@
 import base64
-import json
-import uuid
+import hashlib
+import hmac
+from datetime import datetime
 
 import pytz
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Signature import PKCS1_v1_5
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import padding
-from datetime import datetime
+
+from Constant import MERCHANT_SECRET
 
 
 # Generating Signatures with Crypto
@@ -20,43 +19,26 @@ def sign(privateKey, message):
     signature = cipher.sign(h)
     return base64.b64encode(signature).decode('utf-8')
 
-def checkSha256RsaSignature(content, signature, publicKeyStr):
-    try:
-        public_key = serialization.load_pem_public_key(publicKeyStr.encode('utf-8'))
 
-        data_to_verify = content.encode('utf-8')
-        signature_bytes = base64.b64decode(signature)
-        public_key.verify(
-            signature_bytes,
-            data_to_verify,
-            padding.PKCS1v15(),
-            hashes.SHA256()
-        )
-        return True
-    except Exception as e:
-        print("error:" + str(e))  # Convert the exception object to a string and print it
-        return False
+def hmacSHA512(method, endPointUlr, accessToken, json_data_minify, timestamp):
+    print("json_data_minify=", json_data_minify)
 
+    # calculate_sha256
+    byte2Hex = calculate_sha256(json_data_minify)
+    print("sha256 then byte2Hex=", byte2Hex)
 
-def generate_32bit_uuid():
-    # Generate a UUID
-    unique_id = uuid.uuid4()
-    # Convert the UUID to a 32-character string (remove dashes)
-    uuid_str = str(unique_id).replace('-', '')
-    return uuid_str
+    # lowercase_string
+    lower_case = byte2Hex.lower()
+    print("lower_case=", lower_case)
 
+    # build
+    string_to_sign = method + ":" + endPointUlr + ":" + accessToken + ":" + lower_case + ":" + timestamp
+    print("string_to_sign=", string_to_sign)
 
-# Generating Signatures with Crypto
-def sha256RsaSignature(privateKey, message):
-    private_key = RSA.importKey(base64.b64decode(privateKey.encode('utf-8')))
-    cipher = PKCS1_v1_5.new(private_key)
-    h = SHA256.new(message.encode('utf-8'))
-    signature = cipher.sign(h)
-    return base64.b64encode(signature).decode('utf-8')
-
-
-def minify(pay_in_req):
-    return json.dumps(pay_in_req, default=lambda o: o.__dict__, separators=(',', ':'))
+    # signature
+    signature = calculate_hmac_sha512_base64(MERCHANT_SECRET, string_to_sign)
+    print("signature=", signature)
+    return signature
 
 
 def get_formatted_datetime(timezone_str: object) -> object:
@@ -66,3 +48,17 @@ def get_formatted_datetime(timezone_str: object) -> object:
     now = datetime.now(timezone)
     # Returns a formatted date and time string
     return now.isoformat(timespec='seconds')
+
+
+def calculate_sha256(text):
+    sha256_hash = hashlib.sha256()
+    sha256_hash.update(text.encode('utf-8'))
+    hash_value = sha256_hash.hexdigest()
+    return hash_value
+
+
+def calculate_hmac_sha512_base64(key, message):
+    hmac_sha512 = hmac.new(key.encode('utf-8'), message.encode('utf-8'), hashlib.sha512)
+    hash_value = hmac_sha512.digest()
+    base64_value = base64.b64encode(hash_value).decode('utf-8')
+    return base64_value
